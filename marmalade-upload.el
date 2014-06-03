@@ -1,4 +1,4 @@
-;;; marmalade-upload.el --- upload client for marmalade from emacs
+;;; marmalade-upload.el --- upload client for marmalade from emacs -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2014  Nic Ferrier
 

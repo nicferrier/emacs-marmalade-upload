@@ -5,7 +5,7 @@
 ;; Author: Nic Ferrier <nferrier@ferrier.me.uk>
 ;; Keywords: lisp
 ;; Version: 0.0.1
-;; Package-requires: ((web "0.4.1"))
+;; Package-requires: ((web "0.4.1")(kv "0.0.19"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@
 ;;; Code:
 
 (require 'web)
+(require 'kv)
+(require 'time-stamp)
 
 (defvar marmalade/tokens (make-hash-table :test 'equal)
   "The tokens used to send requests to marmalade keyed by username.

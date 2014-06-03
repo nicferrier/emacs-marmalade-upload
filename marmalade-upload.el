@@ -41,12 +41,10 @@ don't need to re-authenticate.")
   (funcall next))
 
 (defconst marmalade-auth-url "http://marmalade-repo.org/v1/users/login/"
-  ;; "http://localhost:9020/"
   "The URL to get the token.")
 
-(defconst marmalade-auth-url "http://localhost:8000/v1/users/login/"
-  ;; "http://localhost:9020/"
-  "The URL to get the token.")
+;;(defconst marmalade-auth-url "http://localhost:8000/v1/users/login/"
+;;  "The URL to get the token.")
 
 (defun marmalade/token-acquire (username password next)
   "Get the token, cache it and call the thunk NEXT."
@@ -63,11 +61,10 @@ don't need to re-authenticate.")
      :headers '(("Accept" . "application/json")))))
 
 (defconst marmalade-url "http://marmalade-repo.org/v1/packages"
-  ;; "http://localhost:9020/"
   "The URL where we send packages.")
 
-(defconst marmalade-url "http://localhost:8000/v1/packages"
-  "The URL where we send packages.")
+;;(defconst marmalade-url "http://localhost:8000/v1/packages"
+;;  "The URL where we send packages.")
 
 (defun marmalade-upload (package-buffer username &optional password)
   "Upload a package to marmalade using `web'."

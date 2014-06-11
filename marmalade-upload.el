@@ -68,7 +68,7 @@ don't need to re-authenticate.")
 ;;(defconst marmalade-url "http://localhost:8000/v1/packages"
 ;;  "The URL where we send packages.")
 
-(defun marmalade-upload/get-token (username)
+(defun marmalade/--get-token-from-cache (username)
   "Try and retrieve the USERNAME's token.
 First in the marmalade-upload's cache.
 If not found, this will try to locate a file ~/.marmalade/<username>.
@@ -96,8 +96,8 @@ If found returns it, otherwise, returns nil."
          ;;;  (get-buffer (read-buffer "package file buffer: " nil t))
          (find-file-noselect (read-file-name "package file: ") t t)))
     (let ((username (read-from-minibuffer "marmalade username: ")))
-      ;; Only need password if we don't have the token cached
-      (if (marmalade-upload/get-token username)
+      ;; Only need password if we don't have the token cached (or stored)
+      (if (marmalade/--get-token-from-cache username)
           (list username)
           (list username (read-passwd "marmalade password: "))))))
   (let ((uploader
@@ -114,7 +114,7 @@ If found returns it, otherwise, returns nil."
             :url marmalade-url
             :headers '(("Accept" . "application/json"))
             :data `(("name" . ,username)
-                    ("token" .  ,(marmalade-upload/get-token username))
+                    ("token" .  ,(marmalade/--get-token-from-cache username))
                     ("package" . ,package-buffer))
             :mime-type web-multipart-mimetype))))
     (if (equal password nil)

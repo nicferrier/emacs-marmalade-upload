@@ -4,7 +4,7 @@
 
 ;; Author: Nic Ferrier <nferrier@ferrier.me.uk>
 ;; Keywords: lisp
-;; Version: 0.0.2
+;; Version: 0.0.3
 ;; Package-requires: ((web "0.4.1")(kv "0.0.19"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -68,6 +68,7 @@ don't need to re-authenticate.")
 ;;(defconst marmalade-url "http://localhost:8000/v1/packages"
 ;;  "The URL where we send packages.")
 
+;;;###autoload
 (defun marmalade-upload (package-buffer username &optional password)
   "Upload a package to marmalade using `web'."
   (interactive

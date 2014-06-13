@@ -37,6 +37,19 @@
 This is the result of authentication.  If you have the token you
 don't need to re-authenticate.")
 
+(defvar marmalade/default-token-folder "~/.marmalade"
+  "Default folder to look for a token on disk.")
+
+(defvar marmalade/default-token-name   nil
+  "Default token name to search on disk.
+If set to nil, the token filename is the user's login.")
+
+(defun marmalade/compute-token-filepath (login)
+  "Compute the token's filepath from disk.
+If the default token name is not set, the LOGIN is used as the token filename."
+  (let ((token-filename (if marmalade/default-token-name marmalade/default-token-name login)))
+    (expand-file-name (format "%s/%s" marmalade/default-token-folder token-filename))))
+
 (defun marmalade/token-acquired (username token next)
   "Called by `marmalade/token-acquire'."
   (puthash username token marmalade/tokens)
@@ -68,6 +81,21 @@ don't need to re-authenticate.")
 ;;(defconst marmalade-url "http://localhost:8000/v1/packages"
 ;;  "The URL where we send packages.")
 
+(defun marmalade/get-token-from-cache (username)
+  "Try and retrieve the USERNAME's token.
+First in the marmalade-upload's cache.
+If not found, this will try to locate a file ~/.marmalade/<username>.
+This file contains the marmalade authentication token.
+If found returns it, otherwise, returns nil."
+  (let ((token (gethash username marmalade/tokens)))
+    (if token
+        token
+      (let ((token-file (marmalade/compute-token-filepath username)))
+        (when (file-exists-p token-file)
+          (with-temp-buffer ;; return the token file's content
+            (insert-file-contents token-file)
+            (buffer-string)))))))
+
 ;;;###autoload
 (defun marmalade-upload (package-buffer username &optional password)
   "Upload a package to marmalade using `web'."
@@ -83,8 +111,8 @@ don't need to re-authenticate.")
          ;;;  (get-buffer (read-buffer "package file buffer: " nil t))
          (find-file-noselect (read-file-name "package file: ") t t)))
     (let ((username (read-from-minibuffer "marmalade username: ")))
-      ;; Only need password if we don't have the token cached
-      (if (gethash username marmalade/tokens)
+      ;; Only need password if we don't have the token cached (or stored)
+      (if (marmalade/get-token-from-cache username)
           (list username)
           (list username (read-passwd "marmalade password: "))))))
   (let ((uploader
@@ -101,7 +129,7 @@ don't need to re-authenticate.")
             :url marmalade-url
             :headers '(("Accept" . "application/json"))
             :data `(("name" . ,username)
-                    ("token" .  ,(gethash username marmalade/tokens))
+                    ("token" .  ,(marmalade/get-token-from-cache username))
                     ("package" . ,package-buffer))
             :mime-type web-multipart-mimetype))))
     (if (equal password nil)

@@ -37,6 +37,19 @@
 This is the result of authentication.  If you have the token you
 don't need to re-authenticate.")
 
+(defvar marmalade/default-token-folder "~/.marmalade"
+  "Default folder to look for a token on disk.")
+
+(defvar marmalade/default-token-name   nil
+  "Default token name to search on disk.
+If set to nil, the token filename is the user's login.")
+
+(defun marmalade/compute-token-filepath (login)
+  "Compute the token's filepath from disk.
+If the default token name is not set, the LOGIN is used as the token filename."
+  (let ((token-filename (if marmalade/default-token-name marmalade/default-token-name login)))
+    (expand-file-name (format "%s/%s" marmalade/default-token-folder token-filename))))
+
 (defun marmalade/token-acquired (username token next)
   "Called by `marmalade/token-acquire'."
   (puthash username token marmalade/tokens)
@@ -77,11 +90,12 @@ If found returns it, otherwise, returns nil."
   (let ((token (gethash username marmalade/tokens)))
     (if token
         token
-      (let ((token-file (expand-file-name (format "~/.marmalade/%s" username))))
+      (let ((token-file (marmalade/compute-token-filepath username)))
         (when (file-exists-p token-file)
           (with-temp-buffer ;; return the token file's content
             (insert-file-contents token-file)
             (buffer-string)))))))
+
 (defun marmalade-upload (package-buffer username &optional password)
   "Upload a package to marmalade using `web'."
   (interactive

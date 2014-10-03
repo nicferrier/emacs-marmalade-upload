@@ -110,7 +110,7 @@ If found returns it, otherwise, returns nil."
          ;; Else ask for a file?
          ;;;  (get-buffer (read-buffer "package file buffer: " nil t))
          (find-file-noselect (read-file-name "package file: ") t t)))
-    (let ((username (read-from-minibuffer "marmalade username: ")))
+    (let ((username (completing-read "marmalade username: " marmalade/tokens)))
       ;; Only need password if we don't have the token cached (or stored)
       (if (marmalade/get-token-from-cache username)
           (list username)
@@ -135,7 +135,6 @@ If found returns it, otherwise, returns nil."
     (if (equal password nil)
         (funcall uploader)
         (marmalade/token-acquire username password uploader))))
-
 
 (provide 'marmalade-upload)
 

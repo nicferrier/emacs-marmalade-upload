@@ -39,6 +39,29 @@ If you're not currently viewing a package buffer marmalade-upload will
 prompt for a package file. This can be a package as a tar or an el
 file, it doesn't matter.
 
+== Using shell instead of Emacs-Lisp ==
+
+On #Emacs you can ask fsbot about {{{,nicferrier}}} and it will tell
+you that I am a man with, amongst other things, an unhealthy obsession
+with EmacsLisp. However, even the best of us needs shell sometimes.
+
+Included in this repository is a shell version of marmalade upload,
+the crucial parts of which are:
+
+{{{
+token=$(curl -f -s -d "name=${username}" \
+    -d "password=${password}" \
+    $marmaladeUrl/v1/users/login/ | jq -r '.token')
+curl -F "name=${username}" -F "token=${token}" \
+    -F "package=@${packageFileName};filename=$(basename ${packageFileName})" \
+    $marmaladeUrl/v1/packages
+}
+}}}
+
+You can easily make a shell script hanging off jenkins or whatever
+fucked up bullshit you happen to use for ci.
+
+
 == Bugs? ==
 
 Oh yes. Definitely.

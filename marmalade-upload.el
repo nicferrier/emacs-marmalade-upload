@@ -58,9 +58,6 @@ If the default token name is not set, the LOGIN is used as the token filename."
 (defconst marmalade-auth-url "http://marmalade-repo.org/v1/users/login/"
   "The URL to get the token.")
 
-;;(defconst marmalade-auth-url "http://localhost:8000/v1/users/login/"
-;;  "The URL to get the token.")
-
 (defun marmalade/token-acquire (username password next)
   "Get the token, cache it and call the thunk NEXT."
   (let ((url marmalade-auth-url))
@@ -78,9 +75,6 @@ If the default token name is not set, the LOGIN is used as the token filename."
 (defconst marmalade-url "http://marmalade-repo.org/v1/packages"
   "The URL where we send packages.")
 
-;;(defconst marmalade-url "http://localhost:8000/v1/packages"
-;;  "The URL where we send packages.")
-
 (defun marmalade/get-token-from-cache (username)
   "Try and retrieve the USERNAME's token.
 First in the marmalade-upload's cache.
@@ -95,6 +89,41 @@ If found returns it, otherwise, returns nil."
           (with-temp-buffer ;; return the token file's content
             (insert-file-contents token-file)
             (buffer-string)))))))
+
+(defun marmalade-upload-test-configure (port name)
+  "Configure marmalade-upload urls to point to a test server.
+
+You only need this if you're testing marmalade."
+  (interactive
+   ;; Return the port of the server
+   (let* ((completions
+           (--keep
+            (cons
+             (format
+              "%d %s"
+              (car it)
+              (let ((handler (elnode/con-lookup (cdr it) :elnode-http-handler)))
+                (when (functionp handler) (documentation handler))))
+             (car it)) 
+            elnode-server-socket))
+          (chosen
+           (kva
+            (completing-read "Elnode server: " completions)
+            completions)))
+     (list chosen
+           (format "%s"
+                   (let ((handler 
+                          (elnode/con-lookup
+                           (kva chosen elnode-server-socket)
+                           :elnode-http-handler)))
+                     (when (functionp handler) (documentation handler)))))))
+  (eval `(progn
+           (defconst marmalade-auth-url
+             (format "http://%s:%d/v1/users/login/" "localhost" ,port)
+             "The URL to get the token.")
+           (defconst marmalade-url
+             (format "http://%s:%d/v1/packages" "localhost" ,port)
+             "The URL where we send packages."))))
 
 ;;;###autoload
 (defun marmalade-upload (package-buffer username &optional password)

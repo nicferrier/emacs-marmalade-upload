@@ -146,6 +146,7 @@ You only need this if you're testing marmalade."
           (list username (read-passwd "marmalade password: "))))))
   (let ((uploader
          (lambda ()
+           (message "marmalade-upload: starting upload now...")
            (web-json-post
             (lambda (data con hdr)
               (let ((msg (kva "message" data)))

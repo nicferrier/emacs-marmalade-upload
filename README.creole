@@ -13,7 +13,7 @@ thought I ought to support it in the first instance.
 From [[http://marmalade-repo.org|marmalade]], obviously:
 
 {{{
-M-x package-install [RET] marmalade-upload [RET]
+M-x package-install [RET] marmalade-client [RET]
 }}}
 
 
@@ -61,6 +61,19 @@ curl -F "name=${username}" -F "token=${token}" \
 You can easily make a shell script hanging off jenkins or whatever
 fucked up bullshit you happen to use for ci.
 
+
+== Other client API calls with marmalade ==
+
+We have now exposed package removal:
+
+{{{
+M-x marmalade-remove-package [RET]
+Marmalade-package: [complete from marmalade archive] [RET]
+Username: 
+}}}
+
+Packages aren't actually removed. They are taken out of the archive
+and made non-visible but we always retain them. //Just in case//.
 
 == Bugs? ==
 

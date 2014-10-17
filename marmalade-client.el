@@ -240,8 +240,8 @@ like you."
                       ("token" .  ,(marmalade/get-token-from-cache username)))))))
       (if (equal password nil)
           (funcall remover)
-          (marmalade/token-acquire username password uploader)))))
+          (marmalade/token-acquire username password remover)))))
 
-(provide 'marmalade-upload)
+(provide 'marmalade-client)
 
 ;;; marmalade-upload.el ends here

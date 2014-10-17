@@ -120,34 +120,40 @@ If found returns it, otherwise, returns nil."
       ;; Else
       (format "http://%s%s" "marmalade-repo.org" part)))
 
-(defun marmalade-upload-test-configure (port name)
+(defun marmalade-test-configure (port &optional name)
   "Configure marmalade-upload urls to point to a test server.
 
-You only need this if you're testing marmalade."
+You only need this if you're testing marmalade.
+
+If you call with PORT < 0 it will turn test mode off."
   (interactive
-   ;; Return the port of the server
-   (let* ((completions
-           (--keep
-            (cons
-             (format
-              "%d %s"
-              (car it)
-              (let ((handler (elnode/con-lookup (cdr it) :elnode-http-handler)))
-                (when (functionp handler) (documentation handler))))
-             (car it)) 
-            elnode-server-socket))
-          (chosen
-           (kva
-            (completing-read "Elnode server: " completions)
-            completions)))
-     (list chosen
-           (format "%s"
-                   (let ((handler 
-                          (elnode/con-lookup
-                           (kva chosen elnode-server-socket)
-                           :elnode-http-handler)))
-                     (when (functionp handler) (documentation handler)))))))
-  (setq marmalade/test-mode-socket (list port name))
+   (if current-prefix-arg
+       (list -1)
+       ;; Return the port of the server
+       (let* ((completions
+               (--keep
+                (cons
+                 (format
+                  "%d %s"
+                  (car it)
+                  (let ((handler (elnode/con-lookup (cdr it) :elnode-http-handler)))
+                    (when (functionp handler) (documentation handler))))
+                 (car it)) 
+                elnode-server-socket))
+              (chosen
+               (kva
+                (completing-read "Elnode server: " completions)
+                completions)))
+         (list chosen
+               (format "%s"
+                       (let ((handler 
+                              (elnode/con-lookup
+                               (kva chosen elnode-server-socket)
+                               :elnode-http-handler)))
+                         (when (functionp handler) (documentation handler))))))))
+  (setq marmalade/test-mode-socket
+        (unless (< port 0)
+          (list port name)))
   (message "marmalade test mode: %s" marmalade/test-mode-socket))
 
 ;;;###autoload
@@ -215,8 +221,7 @@ like you."
           (list username)
           (list username (read-passwd "marmalade password: "))))))
   (let* ((marmalade-package-url
-          (marmalade/get-url
-           (format "/v1/package/%s" package-name))))
+          (marmalade/get-url (format "/v1/package/%s" package-name))))
     (let ((remover
            (lambda () ; capture the package-name
              (web-json-post

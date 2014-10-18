@@ -4,8 +4,9 @@
 
 ;; Author: Nic Ferrier <nferrier@ferrier.me.uk>
 ;; Keywords: lisp
-;; Version: 0.0.7
+;; Version: 0.0.8
 ;; Package-requires: ((web "0.4.2")(kv "0.0.19"))
+;; Url: https://github.com/nicferrier/emacs-marmalade-upload
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -50,6 +51,12 @@
 
 ;; and try again.
 
+;; You can also add owners to your package:
+
+;;  M-x marmalade-client-add-owner [RET]
+
+;; This makes it easier to distribute the management of releases and
+;; also to hand off a package when you get tired of maintaining it.
 
 ;;; Code:
 

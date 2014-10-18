@@ -1,4 +1,5 @@
-upload packages to marmalade from inside Emacs.
+upload packages to marmalade and do other things with it, from inside
+Emacs.
 
 == About ==
 
@@ -6,6 +7,11 @@ This supports (somewhat, there may be bugs) the old javascript based
 marmalade upload API. That was very fragile and I hope to replace it
 with a newer API but there were at least a few tools based on it so I
 thought I ought to support it in the first instance.
+
+
+== Changes ==
+
+I've changed the name of this package to {{{marmalade-client}}}.
 
 
 == Install ==
@@ -74,6 +80,22 @@ Username:
 
 Packages aren't actually removed. They are taken out of the archive
 and made non-visible but we always retain them. //Just in case//.
+
+Also we have exposed adding owners to a project:
+
+{{{
+M-x marmalade-client-add-owner [RET]
+Marmalade package: [complete from marmalade archive] [RET]
+new owner username: 
+marmalade username:
+}}}
+
+Obviously type the name of the new user you want to have ownership
+rights on your Marmalade package.
+
+Once you've added another user they may upload new versions of the
+package or remove it.
+
 
 == Bugs? ==
 

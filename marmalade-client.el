@@ -242,6 +242,55 @@ like you."
           (funcall remover)
           (marmalade/token-acquire username password remover)))))
 
+
+(defun marmalade-client-add-owner (package-name new-username username &optional password)
+  "Ask marmalade to add NEW-USERNAME as an owner of PACKAGE-NAME.
+
+You must be authorized to do so and the package must exist and
+all those things.  Marmalade will give an error if it doesn't
+like you."
+  (interactive
+   (append
+    (list
+     (completing-read
+      "Marmalade package: "
+      (with-current-buffer
+          (find-file-noselect
+           (format "%s/archives/marmalade/archive-contents" package-user-dir))
+        (save-excursion
+          (goto-char (point-min))
+          (cdr (read (current-buffer)))))
+      nil t)
+     (read-from-minibuffer "new owner username: "))
+    (let ((username (completing-read "marmalade username: " marmalade/tokens)))
+      ;; Only need password if we don't have the token cached (or stored)
+      (if (marmalade/get-token-from-cache username)
+          (list username)
+          (list username (read-passwd "marmalade password: "))))))
+  (let* ((marmalade-package-url
+          (marmalade/get-url (format "/v1/package/%s" package-name))))
+    (let ((owner-adder
+           (lambda () ; capture the package-name and new-username
+             (web-json-post
+              (lambda (data con hdr)
+                (let ((msg (kva "message" data)))
+                  (cond 
+                    ((equal msg "Username or token invalid")
+                     (remhash username marmalade/tokens)
+                     (error "marmalade-upload: bad username or token, try again?"))
+                    (t
+                     (message "package updated: %s" data)))))
+              :url marmalade-package-url
+              :headers '(("Accept" . "application/json"))
+              :data `(("name" . ,username)
+                      ("token" .  ,(marmalade/get-token-from-cache username))
+                      ("addowner" . "addowner")
+                      ("new-owner" . ,new-username))))))
+      (if (equal password nil)
+          (funcall owner-adder)
+          (marmalade/token-acquire username password owner-adder)))))
+
+
 (provide 'marmalade-client)
 
 ;;; marmalade-client.el ends here

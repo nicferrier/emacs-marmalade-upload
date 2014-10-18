@@ -244,4 +244,4 @@ like you."
 
 (provide 'marmalade-client)
 
-;;; marmalade-upload.el ends here
+;;; marmalade-client.el ends here

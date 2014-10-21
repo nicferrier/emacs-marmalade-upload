@@ -249,7 +249,6 @@ like you."
           (funcall remover)
           (marmalade/token-acquire username password remover)))))
 
-
 (defun marmalade-client-add-owner (package-name new-username username &optional password)
   "Ask marmalade to add NEW-USERNAME as an owner of PACKAGE-NAME.
 

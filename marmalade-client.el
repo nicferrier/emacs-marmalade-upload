@@ -296,7 +296,6 @@ like you."
           (funcall owner-adder)
           (marmalade/token-acquire username password owner-adder)))))
 
-
 (provide 'marmalade-client)
 
 ;;; marmalade-client.el ends here

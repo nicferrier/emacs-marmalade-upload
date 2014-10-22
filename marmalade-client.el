@@ -117,6 +117,17 @@ If found returns it, otherwise, returns nil."
             (insert-file-contents token-file)
             (buffer-string)))))))
 
+(defun marmalade-client/log (message)
+  "Log the specified MESSAGE and pop the marmalade buffer."
+  (with-current-buffer (get-buffer-create "*Marmalade-client-log*")
+    (setq buffer-read-only t)
+    (save-excursion
+      (goto-char (point-min))
+      (let ((buffer-read-only nil))
+        (insert message "\n\n"))))
+  (display-buffer (get-buffer-create "*Marmalade-client-log*")))
+
+
 (defvar marmalade/test-mode-socket nil
   "If set then marmalade will use test mode urls.")
 
@@ -193,7 +204,8 @@ If you call with PORT < 0 it will turn test mode off."
                    (remhash username marmalade/tokens)
                    (error "marmalade-upload: bad username or token, try again?"))
                   (t
-                   (message "package uploaded: %s" data)))))
+                   (marmalade-client/log
+                    (format "package uploaded: %s" data))))))
             :url (marmalade/get-url "/v1/packages")
             :headers '(("Accept" . "application/json"))
             :data `(("name" . ,username)
@@ -239,7 +251,8 @@ like you."
                      (remhash username marmalade/tokens)
                      (error "marmalade-upload: bad username or token, try again?"))
                     (t
-                     (message "package removed: %s" data)))))
+                     (marmalade-client/log 
+                      (format "package removed: %s" data))))))
               :url marmalade-package-url
               :headers '(("Accept" . "application/json"))
               :data `(("name" . ,username)
@@ -285,7 +298,8 @@ like you."
                      (remhash username marmalade/tokens)
                      (error "marmalade-upload: bad username or token, try again?"))
                     (t
-                     (message "package updated: %s" data)))))
+                     (marmalade-client/log 
+                      (format "package updated: %s" data))))))
               :url marmalade-package-url
               :headers '(("Accept" . "application/json"))
               :data `(("name" . ,username)

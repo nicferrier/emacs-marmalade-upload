@@ -134,9 +134,9 @@ If found returns it, otherwise, returns nil."
 (defun marmalade/get-url (part)
   "Get the url for talking to Marmalade URL PART."
   (if marmalade/test-mode-socket
-      (format "http://%s:%d%s" "localhost" (car marmalade/test-mode-socket) part)
+      (format "https://%s:%d%s" "localhost" (car marmalade/test-mode-socket) part)
       ;; Else
-      (format "http://%s%s" "marmalade-repo.org" part)))
+      (format "https://%s%s" "marmalade-repo.org" part)))
 
 (defun marmalade-test-configure (port &optional name)
   "Configure marmalade-upload urls to point to a test server.

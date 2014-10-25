@@ -4,8 +4,8 @@
 
 ;; Author: Nic Ferrier <nferrier@ferrier.me.uk>
 ;; Keywords: lisp
-;; Version: 0.0.8
-;; Package-requires: ((web "0.4.2")(kv "0.0.19"))
+;; Version: 0.0.9
+;; Package-requires: ((web "0.4.2")(kv "0.0.19")(gh "0.8.0"))
 ;; Url: https://github.com/nicferrier/emacs-marmalade-upload
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -63,6 +63,7 @@
 (require 'web)
 (require 'kv)
 (require 'time-stamp)
+(require 'gh)
 
 (defvar marmalade/tokens (make-hash-table :test 'equal)
   "The tokens used to send requests to marmalade keyed by username.
@@ -252,7 +253,7 @@ like you."
                      (error "marmalade-upload: bad username or token, try again?"))
                     (t
                      (marmalade-client/log 
-                      (format "package removed: %s" data))))))
+                      (format "package '%s' removed: %s" package-name data))))))
               :url marmalade-package-url
               :headers '(("Accept" . "application/json"))
               :data `(("name" . ,username)
@@ -299,7 +300,7 @@ like you."
                      (error "marmalade-upload: bad username or token, try again?"))
                     (t
                      (marmalade-client/log 
-                      (format "package updated: %s" data))))))
+                      (format "package '%s' updated: %s" package-name data))))))
               :url marmalade-package-url
               :headers '(("Accept" . "application/json"))
               :data `(("name" . ,username)
@@ -309,6 +310,31 @@ like you."
       (if (equal password nil)
           (funcall owner-adder)
           (marmalade/token-acquire username password owner-adder)))))
+
+(defun fill-string (str)
+  (with-temp-buffer
+    (insert str)
+    (fill-paragraph)
+    (buffer-string)))
+
+(defun marmalade-client-list-issues ()
+  (interactive)
+  (let ((ghcon (gh-issues-api "api")))
+    (with-current-buffer (get-buffer-create "*marmalade-issues*")
+      (erase-buffer)
+      (--map
+       (insert
+        (format
+         "#%s %s -- %s\n%s\n\n"
+         (oref it number)
+         (oref it created_at)
+         (fill-string (oref it title))
+         (fill-string (replace-regexp-in-string "\r" "\n" (oref it body)))))
+       (oref
+        (gh-issues-issue-list ghcon "nicferrier" "elmarmalade")
+        data))
+      (pop-to-buffer (current-buffer)))))
+
 
 (provide 'marmalade-client)
 

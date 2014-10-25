@@ -1,5 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
+(require 'marmalade-client)
+
 (defun marmalade-make-user (new-username new-email username &optional password)
   "Ask marmalade to add NEW-USERNAME with NEW-EMAIL.
 

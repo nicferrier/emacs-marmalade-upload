@@ -4,7 +4,7 @@
 
 ;; Author: Nic Ferrier <nferrier@ferrier.me.uk>
 ;; Keywords: lisp
-;; Version: 0.0.9
+;; Version: 0.0.11
 ;; Package-requires: ((web "0.4.2")(kv "0.0.19")(gh "0.8.0"))
 ;; Url: https://github.com/nicferrier/emacs-marmalade-upload
 
@@ -64,6 +64,7 @@
 (require 'kv)
 (require 'time-stamp)
 (require 'gh)
+(require 'gh-issues)
 
 (defvar marmalade/tokens (make-hash-table :test 'equal)
   "The tokens used to send requests to marmalade keyed by username.
@@ -217,6 +218,7 @@ If you call with PORT < 0 it will turn test mode off."
         (funcall uploader)
         (marmalade/token-acquire username password uploader))))
 
+;;;###autoload
 (defun marmalade-remove-package (package-name username &optional password)
   "Ask marmalade to remove a package.
 
@@ -263,6 +265,7 @@ like you."
           (funcall remover)
           (marmalade/token-acquire username password remover)))))
 
+;;;###autoload
 (defun marmalade-client-add-owner (package-name new-username username &optional password)
   "Ask marmalade to add NEW-USERNAME as an owner of PACKAGE-NAME.
 
@@ -317,24 +320,26 @@ like you."
     (fill-paragraph)
     (buffer-string)))
 
+;;;###autoload
 (defun marmalade-client-list-issues ()
   (interactive)
   (let ((ghcon (gh-issues-api "api")))
     (with-current-buffer (get-buffer-create "*marmalade-issues*")
-      (erase-buffer)
-      (--map
-       (insert
-        (format
-         "#%s %s -- %s\n%s\n\n"
-         (oref it number)
-         (oref it created_at)
-         (fill-string (oref it title))
-         (fill-string (replace-regexp-in-string "\r" "\n" (oref it body)))))
-       (oref
-        (gh-issues-issue-list ghcon "nicferrier" "elmarmalade")
-        data))
+      (let ((buffer-read-only nil))
+        (erase-buffer)
+        (--map
+         (insert
+          (format
+           "#%s %s -- %s\n%s\n\n-------------------\n"
+           (oref it number)
+           (oref it created_at)
+           (fill-string (oref it title))
+           (fill-string (replace-regexp-in-string "\r" "\n" (oref it body)))))
+         (oref
+          (gh-issues-issue-list ghcon "nicferrier" "elmarmalade")
+          data)))
+      (setq buffer-read-only t)
       (pop-to-buffer (current-buffer)))))
-
 
 (provide 'marmalade-client)
 

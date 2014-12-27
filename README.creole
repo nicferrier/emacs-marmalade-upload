@@ -23,6 +23,13 @@ M-x package-install [RET] marmalade-client [RET]
 }}}
 
 
+== Setup ==
+
+{{{
+M-x customize-group [RET] marmalade-client [RET]
+}}}
+
+
 == Uploading a single (el) package file ==
 
 If you have the package file open in a buffer and you do:

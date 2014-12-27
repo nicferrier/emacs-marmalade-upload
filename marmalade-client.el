@@ -72,12 +72,24 @@
 This is the result of authentication.  If you have the token you
 don't need to re-authenticate.")
 
-(defvar marmalade/default-token-folder "~/.marmalade"
-  "Default folder to look for a token on disk.")
+(defgroup marmalade-client nil
+  " Marmalade client customisation group."
+  :tag "marmalade-client"
+  :version "0.0.11"
+  :group 'marmalade)
 
-(defvar marmalade/default-token-name   nil
+(defcustom marmalade/default-token-folder "~/.marmalade"
+  "Default folder to look for a token on disk."
+  :type 'string
+  :require 'marmalade-client
+  :group 'marmalade-client)
+
+(defcustom marmalade/default-token-name nil
   "Default token name to search on disk.
-If set to nil, the token filename is the user's login.")
+If set to nil, the token filename is the user's login."
+  :type 'string
+  :require 'marmalade-client
+  :group 'marmalade-client)
 
 (defun marmalade/compute-token-filepath (login)
   "Compute the token's filepath from disk.

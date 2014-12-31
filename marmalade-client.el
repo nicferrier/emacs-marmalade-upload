@@ -4,7 +4,7 @@
 
 ;; Author: Nic Ferrier <nferrier@ferrier.me.uk>
 ;; Keywords: lisp
-;; Version: 0.0.11
+;; Version: 0.0.12
 ;; Package-requires: ((web "0.5.2")(kv "0.0.19")(gh "0.8.0"))
 ;; Url: https://github.com/nicferrier/emacs-marmalade-upload
 

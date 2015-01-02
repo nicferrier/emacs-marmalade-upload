@@ -7,7 +7,7 @@ marmaladeUploadFile () {
     local username=$1
     local password=$2
     local packageFile=$3
-    local marmaladeUrl=${4:-"http://marmalade-repo.org"}
+    local marmaladeUrl=${4:-"https://marmalade-repo.org"}
     token=$(curl -f -s -d "name=${username}" \
         -d "password=${password}" \
         $marmaladeUrl/v1/users/login/ | jq -r '.token')
